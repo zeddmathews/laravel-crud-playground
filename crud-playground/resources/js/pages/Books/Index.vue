@@ -24,13 +24,7 @@
 </template>
 
 <script setup lang="ts">
-interface Book {
-  id: number;
-  title: string;
-  author: string;
-  genre: string;
-  description: string;
-}
+import type { Book } from '@/types/book';
 
 defineProps<{
   books: Book[];
