@@ -39,7 +39,7 @@ class BookController extends Controller
             'title' => 'required|string|max:255',
             'author' => 'required|string|max:255',
             'genre' => 'required|string|max:255',
-            'description' => 'required|',
+            'description' => 'required',
         ]);
 
         $book = Book::create([
@@ -49,7 +49,7 @@ class BookController extends Controller
             'description' => $request->description,
         ]);
 
-        return to_route('books.index');
+        return to_route('books.index')->with('success', 'Book added successfully');
     }
 
     /**
@@ -57,7 +57,9 @@ class BookController extends Controller
      */
     public function show(Book $book): Response
     {
-        //
+        return Inertia::render('Books/Show', [
+            'book' => $book,
+        ]);
     }
 
     /**
@@ -65,7 +67,9 @@ class BookController extends Controller
      */
     public function edit(Book $book): Response
     {
-        //
+        return Inertia::render('Books/Edit', [
+            'book' => $book,
+        ]);
     }
 
     /**
@@ -73,7 +77,16 @@ class BookController extends Controller
      */
     public function update(Request $request, Book $book): RedirectResponse
     {
-        //
+        $validated = $request->validate([
+            'title' => $request->title,
+            'author' => $request->author,
+            'genre' => $request->genre,
+            'description' => $request->description,
+        ]);
+
+        $book->update($validated);
+
+        return to_route('books.index')->with('success', 'Book updated successfully');
     }
 
     /**
@@ -81,6 +94,8 @@ class BookController extends Controller
      */
     public function destroy(Book $book): RedirectResponse
     {
-        //
+        $book->delete();
+
+        return to_route('books.index')->with('success', 'Book deleted successfully');
     }
 }

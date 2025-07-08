@@ -1,5 +1,14 @@
 <script setup lang="ts">
-import { useForm } from '@inertiajs/vue3';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { useForm, Head, Link } from '@inertiajs/vue3';
+import InputError from '@/components/InputError.vue';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import Textarea from '@/components/ui/TextArea.vue';
+import { Button } from '@/components/ui/button';
+import { LoaderCircle } from 'lucide-vue-next';
+
+defineOptions({ layout: AppLayout });
 
 const form = useForm({
   title: '',
@@ -10,79 +19,51 @@ const form = useForm({
 
 const submit = () => {
   form.post(route('books.store'), {
-    onFinish: () => { form.reset(); },
+    onFinish: () => form.reset(),
   });
-}
+};
 </script>
 
 <template>
-  <div class="max-w-md mx-auto p-4">
-    <h1 class="text-2xl font-bold mb-6">Add New Book</h1>
+  <Head title="Add Book" />
 
-    <form @submit.prevent="submit" novalidate>
-      <div class="mb-4">
-        <label for="title" class="block font-semibold mb-1">Title</label>
-        <input
-          id="title"
-          type="text"
-          v-model="form.title"
-          class="w-full border rounded px-3 py-2"
-          required
-        />
-        <p v-if="form.errors.title" class="text-red-600 text-sm mt-1">
-          {{ form.errors.title }}
-        </p>
+  <div class="max-w-xl mx-auto p-6 bg-white rounded shadow">
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-xl font-semibold">Add a New Book</h1>
+      <Link :href="route('books.index')" class="text-blue-600 hover:underline text-sm">
+        ← Back to list
+      </Link>
+    </div>
+
+    <form @submit.prevent="submit" class="space-y-4">
+      <div>
+        <Label for="title">Title</Label>
+        <Input id="title" v-model="form.title" required autocomplete="off" />
+        <InputError :message="form.errors.title" />
       </div>
 
-      <div class="mb-4">
-        <label for="author" class="block font-semibold mb-1">Author</label>
-        <input
-          id="author"
-          type="text"
-          v-model="form.author"
-          class="w-full border rounded px-3 py-2"
-          required
-        />
-        <p v-if="form.errors.author" class="text-red-600 text-sm mt-1">
-          {{ form.errors.author }}
-        </p>
+      <div>
+        <Label for="author">Author</Label>
+        <Input id="author" v-model="form.author" required />
+        <InputError :message="form.errors.author" />
       </div>
 
-      <div class="mb-4">
-        <label for="genre" class="block font-semibold mb-1">Genre</label>
-        <input
-          id="genre"
-          type="text"
-          v-model="form.genre"
-          class="w-full border rounded px-3 py-2"
-          required
-        />
-        <p v-if="form.errors.genre" class="text-red-600 text-sm mt-1">
-          {{ form.errors.genre }}
-        </p>
+      <div>
+        <Label for="genre">Genre</Label>
+        <Input id="genre" v-model="form.genre" required />
+        <InputError :message="form.errors.genre" />
       </div>
 
-      <div class="mb-6">
-        <label for="description" class="block font-semibold mb-1">Description</label>
-        <textarea
-          id="description"
-          v-model="form.description"
-          rows="4"
-          class="w-full border rounded px-3 py-2"
-          required
-        ></textarea>
-        <p v-if="form.errors.description" class="text-red-600 text-sm mt-1">
-          {{ form.errors.description }}
-        </p>
+      <div>
+        <Label for="description">Description</Label>
+        <Textarea id="description" v-model="form.description" :rows="4" required />
+        <InputError :message="form.errors.description" />
       </div>
 
-      <button
-        type="submit"
-        class="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700"
-        :disabled="form.processing"
-      >
+      <Button type="submit" class="w-full" :disabled="form.processing">
+        <LoaderCircle v-if="form.processing" class="animate-spin mr-2 h-4 w-4" />
         Save Book
-      </button>
+      </Button>
     </form>
   </div>
 </template>
