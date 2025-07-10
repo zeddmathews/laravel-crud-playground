@@ -13,12 +13,19 @@ class BookController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $books = Book::all();
+        $search = $request->input('search');
+
+        $books = Book::query()
+            ->when($search, function ($query, $search) {
+                $query->where('title', 'like', "%{search}%");
+            })
+            ->get();
 
         return Inertia::render('Books/Index', [
-            'books' => $books
+            'books' => $books,
+            'search' => $search,
         ]);
     }
 
@@ -55,12 +62,12 @@ class BookController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Book $book): Response
+    /* public function show(Book $book): Response
     {
         return Inertia::render('Books/Show', [
             'book' => $book,
         ]);
-    }
+    } */
 
     /**
      * Show the form for editing the specified resource.
@@ -78,10 +85,10 @@ class BookController extends Controller
     public function update(Request $request, Book $book): RedirectResponse
     {
         $validated = $request->validate([
-            'title' => $request->title,
-            'author' => $request->author,
-            'genre' => $request->genre,
-            'description' => $request->description,
+            'title' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'genre' => 'required|string|max:255',
+            'description' => 'required|string',
         ]);
 
         $book->update($validated);
